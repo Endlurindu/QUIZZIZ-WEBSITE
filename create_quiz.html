@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Quiz</title>
+    <style>
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-image: url("/static/images.jpeg"); /* Replace "/static/background_image.jpg" with the path to your image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* Container styles */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.8); /* Added background color with opacity */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading styles */
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Form styles */
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Label styles */
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        /* Input styles */
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Button styles */
+        button[type="button"],
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+            margin-top: 10px;
+        }
+
+        button[type="button"]:hover,
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* Question container styles */
+        .question-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            position: relative; /* Added */
+        }
+
+        /* Options styles */
+        .options {
+            margin-left: 20px;
+            padding-left: 20px;
+            border-left: 1px solid #ccc;
+        }
+
+        /* Correct option label styles */
+        .correct {
+            font-weight: bold;
+            color: green;
+        }
+
+        /* Remove question button styles */
+        .remove-question {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            position: absolute; /* Added */
+            top: 10px; /* Adjust as needed */
+            right: 10px; /* Adjust as needed */
+        }
+
+        /* Option input styles */
+        .options input[type="text"] {
+            margin-bottom: 10px;
+        }
+
+        /* Timer styles */
+        .timer {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create Quiz</h1>
+        <form id="quizForm" action="/create_quiz" method="post">
+        
+            <!-- Removed quiz name input field -->
+            
+            <label for="timer">Timer (in minutes):</label><br>
+            <input type="number" id="timer" name="timer" min="1" required><br><br>
+            
+            <div id="questions">
+                <div class="question-container">
+                    <label for="question_1">Question 1:</label><br>
+                    <input type="text" id="question_1" name="questions[]" required><br>
+                    
+                    <label for="options_1">Options:</label><br>
+                    <input type="text" id="option_1_1" name="options[0][]" required><br>
+                    <input type="text" id="option_1_2" name="options[0][]" required><br>
+                    <input type="text" id="option_1_3" name="options[0][]" required><br>
+                    <input type="text" id="option_1_4" name="options[0][]" required><br>
+                    
+                    <label for="correct_option_1">Correct Option:</label><br>
+                    <select id="correct_option_1" name="correct_options[0]" required>
+                        <option value="0">Option 1</option>
+                        <option value="1">Option 2</option>
+                        <option value="2">Option 3</option>
+                        <option value="3">Option 4</option>
+                    </select><br><br>
+                    
+                    <button type="button" class="remove-question" onclick="removeQuestion(this)">Remove Question</button> <!-- Added -->
+                </div>
+            </div>
+            
+            <button type="button" onclick="addQuestion()">Add Question</button><br><br>
+            
+            <input type="submit" value="Save Quiz">
+        </form>
+
+        <script>
+            var questionCounter = 1;  // Initialize question counter
+            
+            function addQuestion() {
+                questionCounter++;
+                const div = document.createElement('div');
+                div.className = "question-container";
+                div.innerHTML = `
+                    <label for="question_${questionCounter}">Question ${questionCounter}:</label><br>
+                    <input type="text" id="question_${questionCounter}" name="questions[]" required><br>
+                    
+                    <label for="options_${questionCounter}">Options:</label><br>
+                    <input type="text" id="option_${questionCounter}_1" name="options[${questionCounter - 1}][]" required><br>
+                    <input type="text" id="option_${questionCounter}_2" name="options[${questionCounter - 1}][]" required><br>
+                    <input type="text" id="option_${questionCounter}_3" name="options[${questionCounter - 1}][]" required><br>
+                    <input type="text" id="option_${questionCounter}_4" name="options[${questionCounter - 1}][]" required><br>
+                    
+                    <label for="correct_option_${questionCounter}">Correct Option:</label><br>
+                    <select id="correct_option_${questionCounter}" name="correct_options[${questionCounter - 1}]" required>
+                        <option value="0">Option 1</option>
+                        <option value="1">Option 2</option>
+                        <option value="2">Option 3</option>
+                        <option value="3">Option 4</option>
+                    </select><br><br>
+                    
+                    <button type="button" class="remove-question" onclick="removeQuestion(this)">Remove Question</button> <!-- Added -->
+                `;
+                document.getElementById('questions').appendChild(div);
+            } 
+            
+            function removeQuestion(button) {
+                var question = button.parentNode;
+                question.parentNode.removeChild(question);
+                questionCounter--;
+            }
+        </script>
+    </div>
+</body>
+</html>
+
